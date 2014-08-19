@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/detach.svg)](http://badge.fury.io/rb/detach)
+
 # Detach
 
 A mixin which separates method definitions by argument types, effectively allowing
