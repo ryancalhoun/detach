@@ -1,7 +1,17 @@
+# The Detach mixin provides method dispatch according to argument types.
+# Method definitions are separated by name and signatue, allowing for
+# C++ or Java style overloading.
+#
 module Detach
+	# Extends the base class with the module Detach::Types.
 	def self.included(base)
 		base.extend(Types)
 	end
+	# Provides run-time method lookup according to the types of the args.
+	#
+	# All methods matching the name are scored according to both arity and type.
+	# Varargs and default values are interpolated with actual values. Predefined classes
+	# are compared to actual classes using equality and inheritence checks.
 	def method_missing(name, *args, &block)
 		(score,best) = (public_methods+protected_methods+private_methods).grep(/^#{name}\(/).collect {|candidate|
 			# extract paramters
@@ -42,10 +52,22 @@ module Detach
 		(not score or score == 0) ? super : method(best)[*args, &block]
 	end
 
+	# The Detach::Types module is inserted as a parent of the class which includes the
+	# Detach mixin. This module handles inspection and aliasing of instance methods
+	# as they are added.
+	#
+	# Detach::Types does not need to be extended directly.
 	module Types
+		# Decorator method for defining argument signature.
+		#
+		# Example:
+		#   taking['String']
+		#   def foo(a)
+		#   end
 		def taking
 			self
 		end
+		# :stopdoc:
 		def [](*types)
 			@@types = types.flatten
 		end
