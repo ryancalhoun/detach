@@ -2,6 +2,22 @@
 # Method definitions are separated by name and signatue, allowing for
 # C++ or Java style overloading.
 #
+# Example:
+#   class Bar
+#     include Detach
+#     taking['String','String']
+#     def foo(a,b)
+#       a.upcase + b.upcase
+#     end
+#     taking['Integer','Integer']
+#     def foo(a=42,b)
+#       a * b
+#     end
+#     taking['Object','String']
+#     def foo(a,*b)
+#       b.map {|s| s.upcase + a.to_s}.join
+#     end
+#   end
 module Detach
 	# Extends the base class with the module Detach::Types.
 	def self.included(base)
