@@ -96,10 +96,14 @@ module Detach
 		def taking
 			self
 		end
-		# :stopdoc:
+		# Provides list of type names to decorator.
 		def [](*types)
 			@@types = types.flatten
 		end
+		# Provides load-time method aliasing.
+		#
+		# All methods added to a class which are decorated as taking specified types
+		# are aliased in a form known and searched at run-time.
 		def method_added(name)
 			return unless @@types
 
