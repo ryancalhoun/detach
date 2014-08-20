@@ -29,7 +29,20 @@ module Detach
 	# Varargs and default values are interpolated with actual values. Predefined classes
 	# are compared to actual classes using equality and inheritence checks.
 	def method_missing(name, *args, &block)
-		(score,best) = (public_methods+protected_methods+private_methods).grep(/^#{name}\(/).collect {|candidate|
+		obj_method_missing = -> {
+			BasicObject.instance_method(:method_missing).bind(self).call(name, *args, &block)
+		}
+
+		# some early returns are necessary when Detach has been mixed into
+		# the class of object 'main'
+		case name
+		when :to_ary
+			return obj_method_missing.call
+		when :taking
+			return Types.instance_method(:taking).bind(self.class).call if self.class == Object
+		end
+
+		(score,best) = (public_methods+protected_methods+private_methods).grep(/^#{Regexp.escape(name)}\(/).collect {|candidate|
 			# extract paramters
 			params = /\((.*)\)/.match(candidate.to_s)[1].scan(/(\w+)-([\w:)]+)/).collect {|s,t|
 				[s.to_sym, t.split(/::/).inject(Kernel) {|m,c| m = m.const_get(c)}]
@@ -65,7 +78,7 @@ module Detach
 
 		}.max {|a,b| a[0] <=> b[0]}
 
-		(not score or score == 0) ? super : method(best)[*args, &block]
+		(not score or score == 0) ? obj_method_missing.call : method(best)[*args, &block]
 	end
 
 	# The Detach::Types module is inserted as a parent of the class which includes the

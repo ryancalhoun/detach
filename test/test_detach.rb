@@ -36,6 +36,10 @@ class TestDetach < Test::Unit::TestCase
 		assert_equal "P::M 42", Foo.new.foo(P::M.new)
 	end
 
+	def testMethodNamedTaking
+		assert_equal "hello", Bar.new.taking("hello")
+	end
+
 	def testConstructor
 		assert_equal "hello world", Wow.new("hello", "world").to_s
 		assert_equal "11", Wow.new(5, 6).to_s
@@ -115,6 +119,15 @@ class TestDetach < Test::Unit::TestCase
 		taking[P::M]
 		def foo(m)
 			"P::M #{m.wow}"
+		end
+	end
+
+	class Bar
+		include Detach
+
+		taking[String]
+		def taking(s)
+			@s = s
 		end
 	end
 
