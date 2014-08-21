@@ -44,7 +44,7 @@ module Detach
 
 		(score,best) = (public_methods+protected_methods+private_methods).grep(/^#{Regexp.escape(name)}\(/).collect {|candidate|
 			# extract paramters
-			params = /\((.*)\)/.match(candidate.to_s)[1].scan(/(\w+)-([\w:)]+)/).collect {|s,t|
+			params = /\((.*)\)/.match(candidate.to_s)[1].scan(/(\w+)-([\w:\)]+)/).collect {|s,t|
 				[s.to_sym, t.split(/::/).inject(Kernel) {|m,c| m = m.const_get(c)}]
 			}
 			# form the list of all required argument classes
