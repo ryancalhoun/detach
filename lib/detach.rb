@@ -49,6 +49,7 @@ module Detach
 			}
 			# form the list of all required argument classes
 			ctypes = params.values_at(*params.each_index.select {|i| params[i].first == :req}).map(&:last)
+			nreq = ctypes.size
 
 			# NOTE: ruby only allows a single *args, or a list of a=1, b=2--not both together--
 			# only one of the following will execute
@@ -68,11 +69,20 @@ module Detach
 			elsif ctypes.size == args.size
 				score = args.map(&:class).zip(ctypes).inject(0) {|s,t| 
 					# apply each class comparison and require nonzero matches
-					s and ->(n) {s += n if n > 0}[ [ :==, :<=, ].select {|op| ->(a,&b) {b[*a]}[t, &op]}.size ]
+					if s
+						if t[0].ancestors.include?(t[1])
+							s += t[1].ancestors.size
+						else
+							s = nil
+						end
+					end
+
 				} || 0
 			else
 				score = 0
 			end
+
+			score += (1 + nreq) if args.size == params.size
 
 			[ score, candidate ]
 

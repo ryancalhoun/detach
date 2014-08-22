@@ -19,7 +19,6 @@ class TestDetach < Test::Unit::TestCase
 	def testLists
 		assert_equal "Object List [\"one\", 2, 3.0, \"4\"]", Foo.new.foo('one', 2, 3.0, '4')
 		assert_equal "String List [\"one\", \"two\", \"three\", \"four\"]", Foo.new.foo('one', 'two', 'three', 'four')
-
 	end
 
 	def testMixedLists
@@ -43,6 +42,12 @@ class TestDetach < Test::Unit::TestCase
 	def testConstructor
 		assert_equal "hello world", Wow.new("hello", "world").to_s
 		assert_equal "11", Wow.new(5, 6).to_s
+	end
+
+	def testDefinitionOrder
+		assert_equal "Nonce", Junk.new.foo
+		assert_equal "String one", Junk.new.foo('one')
+		assert_equal "String List [\"one\", \"two\", \"three\", \"four\"]", Junk.new.foo('one', 'two', 'three', 'four')
 	end
 
 
@@ -149,6 +154,30 @@ class TestDetach < Test::Unit::TestCase
 		end
 	end
 
+	class Junk
+		include Detach
+
+		taking[Object]
+		def foo(*a)
+			"Object List #{a}"
+		end
+
+		taking[String]
+		def foo(*a)
+			"String List #{a}"
+		end
+
+		taking[]
+		def foo
+			"Nonce"
+		end
+
+		taking[String]
+		def foo(a)
+			"String #{a}"
+		end
+
+	end
 
 end
 
