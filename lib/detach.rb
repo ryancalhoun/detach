@@ -97,6 +97,7 @@ module Detach
 	#
 	# Detach::Types does not need to be extended directly.
 	module Types
+		@@types = nil
 		# Decorator method for defining argument signature.
 		#
 		# Example:
@@ -115,11 +116,6 @@ module Detach
 		# All methods added to a class which are decorated as taking specified types
 		# are aliased in a form known and searched at run-time.
 		def method_added(name)
-            begin
-                @@types     # catch uninitialized @@types here to enable function without taking-prefix
-            rescue
-                return
-            end
 			return unless @@types
 
 			# query the parameter info for the method just added

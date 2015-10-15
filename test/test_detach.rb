@@ -66,6 +66,10 @@ class TestDetach < Test::Unit::TestCase
 	class Foo
 		include Detach
 
+		def foo
+			raise 'unused, and no annotation'
+		end
+
 		taking[String, String]
 		def foo(a, b)
 			"Strings #{a + b}"
